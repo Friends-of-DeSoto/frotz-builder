@@ -79,5 +79,6 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           token: ${{ secrets.GIT_TOKEN }}
+          tag: ${{ env.RELEASE_VERSION }}
           allowUpdates: true
           artifacts: "tmpbin/*"
