@@ -1,0 +1,79 @@
+# Name:        build-and-save-binaries.yaml
+# Author:      Mathew Fleisch <mathew.fleisch@gmail.com>
+# Description: This action will build and push a docker container, when triggered by
+#              pushing to the main branch
+name: Release Container and Helm Chart
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+
+  release:
+    name: Release Containers and Helm Chart
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      -
+        name: Set tag environment variables
+        run: |
+          echo "RELEASE_VERSION=$(make version)" >> $GITHUB_ENV
+          echo "OS=$(uname | tr [[:upper:]] [[:lower:]])" >> $GITHUB_ENV
+          if [ "$(uname -m)" = "aarch64" ] || [ "$(uname -m)" = "arm64" ]; then 
+            echo "ARCH=arm64" >> $GITHUB_ENV
+          else
+            echo "ARCH=amd64" >> $GITHUB_ENV
+          fi
+      -
+        name: Set up QEMU
+        id: qemu
+        uses: docker/setup-qemu-action@v1
+      -
+        name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v1
+      -
+        name: Docker Login
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      -
+        name: Build and Push Containers
+        id: docker_build
+        uses: docker/build-push-action@v3
+        with:
+          push: true
+          context: .
+          platforms: linux/amd64,linux/arm64,darwin/amd64,darwin/arm64
+          tags: |
+            ghcr.io/Friends-of-DeSoto/frotz-builder:latest
+            ghcr.io/Friends-of-DeSoto/frotz-builder:${{ env.RELEASE_VERSION }}
+          cache-from: type=registry,ref=ghcr.io/Friends-of-DeSoto/frotz-builder:latest
+          cache-to: type=inline
+      - 
+        name: Configure Git
+        run: |
+          git config user.name "$GITHUB_ACTOR"
+          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+          docker ps
+          docker images
+          container_id=$(docker run -dit ghcr.io/Friends-of-DeSoto/frotz-builder:${{ env.RELEASE_VERSION }})
+          echo "Running container: $container_id"
+          binary_name=$(docker exec -it $container_id ls /usr/local/bin/ | tr ' ' '\n' | grep dfrotz)
+          mkdir -p tmpbin
+          docker cp $container_id:/usr/local/bin/$binary_name ./tmpbin/.
+
+      -
+        name: Cut Github Release
+        uses: ncipollo/release-action@v1
+        with:
+          token: ${{ secrets.GIT_TOKEN }}
+          allowUpdates: true
+          artifacts: "tmpbin/*"
