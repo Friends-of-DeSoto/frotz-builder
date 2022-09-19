@@ -2,7 +2,7 @@
 # Author:      Mathew Fleisch <mathew.fleisch@gmail.com>
 # Description: This action will build and push a docker container, when triggered by
 #              pushing to the main branch
-name: Release Container and Helm Chart
+name: Release Containers
 on:
   push:
     branches:
@@ -11,7 +11,7 @@ on:
 jobs:
 
   release:
-    name: Release Containers and Helm Chart
+    name: Release Containers
     runs-on: ubuntu-latest
     steps:
       -
@@ -53,9 +53,9 @@ jobs:
           context: .
           platforms: linux/amd64,linux/arm64,darwin/amd64,darwin/arm64
           tags: |
-            ghcr.io/Friends-of-DeSoto/frotz-builder:latest
-            ghcr.io/Friends-of-DeSoto/frotz-builder:${{ env.RELEASE_VERSION }}
-          cache-from: type=registry,ref=ghcr.io/Friends-of-DeSoto/frotz-builder:latest
+            ghcr.io/friends-of-desoto/frotz-builder:latest
+            ghcr.io/friends-of-desoto/frotz-builder:${{ env.RELEASE_VERSION }}
+          cache-from: type=registry,ref=ghcr.io/friends-of-desoto/frotz-builder:latest
           cache-to: type=inline
       - 
         name: Configure Git
@@ -64,7 +64,7 @@ jobs:
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
           docker ps
           docker images
-          container_id=$(docker run -dit ghcr.io/Friends-of-DeSoto/frotz-builder:${{ env.RELEASE_VERSION }})
+          container_id=$(docker run -dit ghcr.io/friends-of-desoto/frotz-builder:${{ env.RELEASE_VERSION }})
           echo "Running container: $container_id"
           binary_name=$(docker exec -it $container_id ls /usr/local/bin/ | tr ' ' '\n' | grep dfrotz)
           mkdir -p tmpbin
