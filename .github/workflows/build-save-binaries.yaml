@@ -51,7 +51,7 @@ jobs:
         with:
           push: true
           context: .
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64,linux/arm64,darwin
           tags: |
             ghcr.io/friends-of-desoto/frotz-builder:latest
             ghcr.io/friends-of-desoto/frotz-builder:${{ env.RELEASE_VERSION }}
@@ -72,9 +72,6 @@ jobs:
           ls -alF tmpbin
           ls -alF $PWD
           pwd
-          git tag ${{ env.RELEASE_VERSION }}
-          git commit -m "${{ env.RELEASE_VERSION }}"
-          git push origin ${{ env.RELEASE_VERSION }}
 
       -
         name: Cut Github Release

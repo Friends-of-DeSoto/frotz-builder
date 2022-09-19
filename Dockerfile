@@ -6,7 +6,7 @@ COPY Makefile Makefile
 RUN rm /bin/sh && ln -s /bin/bash /bin/sh \
     && apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y \
-        curl wget apt-utils python3 python3-pip make build-essential locales openssl git jq tzdata sudo lsb-release \
+        curl wget apt-utils python3 python3-pip make build-essential locales openssl git jq tzdata sudo lsb-release golang \
     && python3 -m pip install --upgrade --force pip \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
