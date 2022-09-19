@@ -66,7 +66,7 @@ jobs:
           docker images
           container_id=$(docker run -dit ghcr.io/friends-of-desoto/frotz-builder:${{ env.RELEASE_VERSION }})
           echo "Running container: $container_id"
-          binary_name=$(docker exec -it $container_id ls /usr/local/bin/ | tr ' ' '\n' | grep dfrotz)
+          binary_name=$(docker exec -t $container_id ls /usr/local/bin/ | tr ' ' '\n' | grep dfrotz)
           mkdir -p tmpbin
           docker cp $container_id:/usr/local/bin/$binary_name ./tmpbin/.
 
