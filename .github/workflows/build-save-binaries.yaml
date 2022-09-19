@@ -72,6 +72,7 @@ jobs:
           ls -alF tmpbin
           ls -alF $PWD
           pwd
+          git push --delete origin ${{ env.RELEASE_VERSION }}
           git tag ${{ env.RELEASE_VERSION }}
           git push origin ${{ env.RELEASE_VERSION }}
       -
