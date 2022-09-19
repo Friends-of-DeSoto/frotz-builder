@@ -69,6 +69,9 @@ jobs:
           binary_name=$(docker exec -t $container_id ls /usr/local/bin/ | tr ' ' '\n' | grep dfrotz)
           mkdir -p tmpbin
           docker cp $container_id:/usr/local/bin/$binary_name ./tmpbin/.
+          ls -alF tmpbin
+          ls -alF $PWD
+          pwd
 
       -
         name: Cut Github Release
