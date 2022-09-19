@@ -51,7 +51,7 @@ jobs:
         with:
           push: true
           context: .
-          platforms: linux/amd64,linux/arm64,darwin
+          platforms: linux/amd64,linux/arm64
           tags: |
             ghcr.io/friends-of-desoto/frotz-builder:latest
             ghcr.io/friends-of-desoto/frotz-builder:${{ env.RELEASE_VERSION }}
