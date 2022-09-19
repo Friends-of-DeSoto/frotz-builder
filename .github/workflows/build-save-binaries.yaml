@@ -73,7 +73,6 @@ jobs:
           ls -alF $PWD
           pwd
           git tag ${{ env.RELEASE_VERSION }}
-          git commit -m "${{ env.RELEASE_VERSION }}"
           git push origin ${{ env.RELEASE_VERSION }}
       -
         name: Cut Github Release
